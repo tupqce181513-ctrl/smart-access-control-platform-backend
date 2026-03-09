@@ -30,7 +30,7 @@ const sendEmail = async (toEmail, toName, subject, htmlContent) => {
  */
 const sendVerificationEmail = async (user, token) => {
   try {
-    const verificationUrl = `${process.env.APP_URL}/api/auth/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
 
     const html = `
       <!DOCTYPE html>
