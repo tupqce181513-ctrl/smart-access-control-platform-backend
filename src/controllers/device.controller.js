@@ -7,6 +7,8 @@ const catchAsync = require('../utils/catchAsync');
 const ApiError = require('../utils/ApiError');
 const mqttService = require('../services/mqtt.service');
 const permissionService = require('../services/permission.service');
+const websocketService = require('../services/websocket.service');
+const deviceEventService = require('../services/deviceEvent.service');
 
 /**
  * Create a new device
@@ -191,6 +193,14 @@ const updateDevice = catchAsync(async (req, res) => {
     runValidators: true,
   }).populate('ownerId', 'email fullName');
 
+  // Emit WebSocket event
+  await deviceEventService.notifyUsers(
+    updatedDevice._id,
+    updatedDevice.ownerId._id || updatedDevice.ownerId,
+    'device_updated',
+    updatedDevice
+  );
+
   res.json({
     success: true,
     message: 'Device updated successfully',
@@ -229,6 +239,14 @@ const deleteDevice = catchAsync(async (req, res) => {
 
   // Delete device
   await Device.findByIdAndDelete(id);
+
+  // Emit WebSocket event
+  await deviceEventService.notifyUsers(
+    id,
+    device.ownerId,
+    'device_deleted',
+    { deviceId: id }
+  );
 
   res.json({
     success: true,
@@ -356,13 +374,17 @@ const sendCommand = catchAsync(async (req, res) => {
 
     if (!isOwner && !isAdmin) {
       const user = await User.findById(userId);
-      await Notification.create({
-        userId: device.ownerId._id,
-        type: 'access_alert',
-        title: 'Access Denied',
-        message: `${user?.fullName || 'Unknown user'} was denied access to ${device.name}. Reason: ${failReason}`,
-        relatedDevice: id,
-      });
+      await deviceEventService.notifyUsers(
+        id,
+        device.ownerId._id || device.ownerId,
+        'new_notification_placeholder', // Socket handled in notifyUsers wrapper
+        {},
+        {
+          type: 'access_alert',
+          title: 'Access Denied',
+          message: `${user?.fullName || 'Unknown user'} was denied access to ${device.name}. Reason: ${failReason}`,
+        }
+      );
     }
 
     throw ApiError.forbidden(failReason);
@@ -384,13 +406,17 @@ const sendCommand = catchAsync(async (req, res) => {
   });
 
   if (!isOwner && !isAdmin) {
-    await Notification.create({
-      userId: device.ownerId._id,
-      type: 'access_alert',
-      title: `Device ${action.charAt(0).toUpperCase() + action.slice(1)}`,
-      message: `${user?.fullName || 'A user'} has ${action}ed the ${device.name} device.`,
-      relatedDevice: id,
-    });
+    await deviceEventService.notifyUsers(
+      id,
+      device.ownerId._id || device.ownerId,
+      'new_notification_placeholder',
+      {},
+      {
+        type: 'access_alert',
+        title: `Device ${action.charAt(0).toUpperCase() + action.slice(1)}`,
+        message: `${user?.fullName || 'A user'} has ${action}ed the ${device.name} device.`,
+      }
+    );
   }
 
   if (permissionResult.accessType === 'one_time' && permissionResult.permission) {

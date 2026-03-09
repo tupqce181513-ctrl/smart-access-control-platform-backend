@@ -50,7 +50,7 @@ app.use(
 // app.use('/api/auth/', authLimiter);
 
 // Body parser middleware
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '10mb' }));
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {

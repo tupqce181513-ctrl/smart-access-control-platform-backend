@@ -3,6 +3,7 @@ require('dotenv').config();
 const app = require('./app');
 const connectDB = require('./config/db');
 const mqttService = require('./services/mqtt.service');
+const websocketService = require('./services/websocket.service');
 
 const PORT = process.env.PORT || 3000;
 
@@ -28,6 +29,9 @@ const startServer = async () => {
     +Server running on: http://localhost:${PORT}       
       `);
     });
+
+    // Initialize WebSocket server
+    websocketService.initialize(server);
 
     // Handle server errors
     server.on('error', (error) => {

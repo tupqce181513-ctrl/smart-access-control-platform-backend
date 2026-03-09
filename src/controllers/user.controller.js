@@ -86,10 +86,11 @@ const changePassword = catchAsync(async (req, res) => {
 });
 
 /**
- * Get all users (Admin only)
+ * Get all users (Admin and Owner only)
  */
 const getAllUsers = catchAsync(async (req, res) => {
   const { page = 1, limit = 10, search } = req.query;
+  const currentUser = req.user;
 
   // Validate pagination
   const pageNum = Math.max(1, parseInt(page) || 1);
@@ -98,6 +99,13 @@ const getAllUsers = catchAsync(async (req, res) => {
 
   // Build search query
   const query = {};
+  
+  // If user is owner, only get members and exclude themselves
+  if (currentUser.role === 'owner') {
+    query.role = 'member';
+    query._id = { $ne: currentUser._id };
+  }
+  
   if (search) {
     query.$or = [
       { email: { $regex: search, $options: 'i' } },
@@ -165,10 +173,50 @@ const toggleActive = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Update user role (Admin only)
+ */
+const updateRole = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  // Validate user ID and role
+  if (!id) {
+    throw ApiError.badRequest('User ID is required');
+  }
+
+  if (!role || !['owner', 'member', 'admin'].includes(role)) {
+    throw ApiError.badRequest('A valid role is required');
+  }
+
+  // Find user
+  const user = await User.findById(id);
+
+  if (!user) {
+    throw ApiError.notFound('User not found');
+  }
+
+  // Prevent admin from changing their own role
+  if (user._id.toString() === req.user._id.toString()) {
+    throw ApiError.forbidden('Cannot change your own role');
+  }
+
+  // Update role
+  user.role = role;
+  await user.save();
+
+  res.json({
+    success: true,
+    message: `User role successfully updated to ${role}`,
+    data: user.toJSON(),
+  });
+});
+
 module.exports = {
   getProfile,
   updateProfile,
   changePassword,
   getAllUsers,
   toggleActive,
+  updateRole,
 };

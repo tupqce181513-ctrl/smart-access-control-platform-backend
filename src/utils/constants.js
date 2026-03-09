@@ -1,10 +1,9 @@
 const constants = {
   // User Roles
   ROLES: {
+    OWNER: 'owner',
+    MEMBER: 'member',
     ADMIN: 'admin',
-    MANAGER: 'manager',
-    USER: 'user',
-    GUEST: 'guest',
   },
 
   // Device Types
@@ -20,62 +19,38 @@ const constants = {
 
   // Device Status
   DEVICE_STATUS: {
-    ACTIVE: 'active',
-    INACTIVE: 'inactive',
+    ONLINE: 'online',
     OFFLINE: 'offline',
-    MAINTENANCE: 'maintenance',
-    DISABLED: 'disabled',
   },
 
   // Device State (Real-time)
   DEVICE_STATE: {
     LOCKED: 'locked',
     UNLOCKED: 'unlocked',
-    OPEN: 'open',
-    CLOSED: 'closed',
-    TRIGGERED: 'triggered',
-    ARMED: 'armed',
-    DISARMED: 'disarmed',
   },
 
-  // Access Types
+  // Access Types (Permissions)
   ACCESS_TYPES: {
-    CARD: 'card',
-    PIN: 'pin',
-    BIOMETRIC: 'biometric',
-    FACIAL: 'facial',
-    RFID: 'rfid',
-    MOBILE: 'mobile',
-    MANUAL: 'manual',
+    PERMANENT: 'permanent',
+    SCHEDULED: 'scheduled',
+    ONE_TIME: 'one_time',
   },
 
   // Log Actions
   LOG_ACTIONS: {
-    ACCESS_GRANTED: 'access_granted',
-    ACCESS_DENIED: 'access_denied',
-    CARD_SCANNED: 'card_scanned',
-    PIN_ENTERED: 'pin_entered',
-    DEVICE_UNLOCKED: 'device_unlocked',
-    DEVICE_LOCKED: 'device_locked',
-    TAMPER_DETECTED: 'tamper_detected',
-    OFFLINE: 'offline',
-    ONLINE: 'online',
-    CONFIG_CHANGED: 'config_changed',
-    USER_LOGIN: 'user_login',
-    USER_LOGOUT: 'user_logout',
+    UNLOCK: 'unlock',
+    LOCK: 'lock',
+    LOGIN: 'login',
+    LOGOUT: 'logout',
+    STATUS_CHANGED: 'status_changed',
   },
 
   // Log Methods (How the action was performed)
   LOG_METHODS: {
-    CARD: 'card',
-    PIN: 'pin',
-    BIOMETRIC: 'biometric',
-    MOBILE_APP: 'mobile_app',
-    REMOTE_CONTROL: 'remote_control',
-    SCHEDULE: 'schedule',
-    EMERGENCY: 'emergency',
-    API: 'api',
-    USER_ACTION: 'user_action',
+    APP: 'app',
+    AUTO: 'auto',
+    SYSTEM: 'system',
+    MANUAL: 'manual',
   },
 
   // Log Status
@@ -89,16 +64,10 @@ const constants = {
 
   // Notification Types
   NOTIFICATION_TYPES: {
-    ACCESS_GRANTED: 'access_granted',
-    ACCESS_DENIED: 'access_denied',
-    TAMPER_ALERT: 'tamper_alert',
-    OFFLINE_ALERT: 'offline_alert',
-    BATTERY_LOW: 'battery_low',
-    DEVICE_MALFUNCTION: 'device_malfunction',
-    UNAUTHORIZED_ACCESS: 'unauthorized_access',
-    SCHEDULE_REMINDER: 'schedule_reminder',
-    MAINTENANCE_DUE: 'maintenance_due',
-    SYSTEM_ALERT: 'system_alert',
+    ACCESS_ALERT: 'access_alert',
+    DEVICE_OFFLINE: 'device_offline',
+    PERMISSION_GRANTED: 'permission_granted',
+    PERMISSION_REVOKED: 'permission_revoked',
   },
 };
 

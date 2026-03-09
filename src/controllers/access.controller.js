@@ -357,6 +357,7 @@ const getUserPermissions = catchAsync(async (req, res) => {
   }
 
   const permissions = await AccessPermission.find(query)
+    .populate('userId', 'email fullName')
     .populate('deviceId', 'name deviceType serialNumber ownerId')
     .populate('createdBy', 'email fullName')
     .skip(skip)

@@ -3,6 +3,8 @@ const mqttConfig = require('../config/mqtt');
 const Device = require('../models/Device');
 const AccessLog = require('../models/AccessLog');
 const Notification = require('../models/Notification');
+const websocketService = require('./websocket.service');
+const deviceEventService = require('./deviceEvent.service');
 require('dotenv').config();
 
 class MqttService {
@@ -224,6 +226,19 @@ class MqttService {
           source: 'mqtt',
         },
       });
+
+      // Emit WebSocket event for real-time update to all permitted users
+      await deviceEventService.notifyUsers(
+        device._id,
+        device.ownerId,
+        'device_status_changed',
+        {
+          deviceId: device._id,
+          state,
+          status: 'online',
+          timestamp: device.lastHeartbeat,
+        }
+      );
     } catch (error) {
       console.error('✗ Error handling status message:', error.message);
     }
@@ -244,6 +259,18 @@ class MqttService {
       await device.save();
 
       console.log(`✓ Received heartbeat from device: ${device.name}`);
+
+      // Emit WebSocket event for real-time heartbeat update to all permitted users
+      await deviceEventService.notifyUsers(
+        device._id,
+        device.ownerId,
+        'device_status_changed',
+        {
+          deviceId: device._id,
+          status: 'online',
+          timestamp: device.lastHeartbeat,
+        }
+      );
     } catch (error) {
       console.error('✗ Error handling heartbeat message:', error.message);
     }
@@ -346,14 +373,22 @@ class MqttService {
 
         console.log(`⚠ Device went offline: ${device.name} (${device.serialNumber})`);
 
-        // Create notification for device owner
-        await Notification.create({
-          userId: device.ownerId,
-          type: 'device_offline',
-          title: 'Thiết bị mất kết nối',
-          message: `Thiết bị "${device.name}" (${device.serialNumber}) đã chuyển sang trạng thái offline do không nhận được tín hiệu.`,
-          relatedDevice: device._id,
-        });
+        // Emit WebSocket updates and store notification
+        await deviceEventService.notifyUsers(
+          device._id,
+          device.ownerId,
+          'device_status_changed',
+          {
+            deviceId: device._id,
+            status: 'offline',
+            timestamp: new Date(),
+          },
+          {
+            type: 'device_offline',
+            title: 'Thiết bị mất kết nối',
+            message: `Thiết bị "${device.name}" (${device.serialNumber}) đã chuyển sang trạng thái offline do không nhận được tín hiệu.`,
+          }
+        );
       }
 
       if (staleDevices.length > 0) {

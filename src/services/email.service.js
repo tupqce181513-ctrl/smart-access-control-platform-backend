@@ -1,4 +1,4 @@
-const transporter = require('../config/mailtrap');
+const transporter = require('../config/mailer');
 require('dotenv').config();
 
 /**
@@ -90,7 +90,7 @@ const sendVerificationEmail = async (user, token) => {
         <body>
           <div class="container">
             <div class="header">
-              <div class="logo">🔐 Smart Access Control</div>
+              <div class="logo">Smart Access Control Platform</div>
               <div class="title">Xác thực Email</div>
             </div>
 
@@ -127,7 +127,7 @@ const sendVerificationEmail = async (user, token) => {
     await transporter.sendMail({
       from: process.env.EMAIL_FROM,
       to: user.email,
-      subject: 'Xác thực email - Smart Access Control',
+      subject: 'Xác thực email - Smart Access Control Platform',
       html: htmlContent,
     });
 
@@ -220,7 +220,7 @@ const sendWelcomeEmail = async (user) => {
         <body>
           <div class="container">
             <div class="header">
-              <div class="logo">🔐 Smart Access Control</div>
+              <div class="logo">Smart Access Control Platform</div>
               <div class="title">Chào mừng đến Platform!</div>
             </div>
 
@@ -358,7 +358,7 @@ const sendAccessGrantedEmail = async (user, device, accessType) => {
         <body>
           <div class="container">
             <div class="header">
-              <div class="logo">🔐 Smart Access Control</div>
+              <div class="logo">Smart Access Control Platform</div>
               <div class="title">✓ Quyền truy cập được cấp</div>
             </div>
 
@@ -499,7 +499,7 @@ const sendAccessRevokedEmail = async (user, device) => {
         <body>
           <div class="container">
             <div class="header">
-              <div class="logo">🔐 Smart Access Control</div>
+              <div class="logo">Smart Access Control Platform</div>
               <div class="title">Quyền truy cập đã bị thu hồi</div>
             </div>
 
@@ -554,25 +554,25 @@ const sendDeviceAlertEmail = async (user, device, alertType) => {
   try {
     const alertConfig = {
       offline: {
-        title: '⚠️ Thiết bị ngoại tuyến',
+        title: 'Thiết bị ngoại tuyến',
         color: '#dc2626',
         bgColor: '#fee2e2',
         message: 'Thiết bị không thể kết nối. Vui lòng kiểm tra kết nối mạng.',
       },
       tamper: {
-        title: '🚨 Phát hiện can dụng',
+        title: 'Phát hiện can dụng',
         color: '#dc2626',
         bgColor: '#fee2e2',
         message: 'Phát hiện dấu hiệu can dụng trên thiết bị. Vui lòng kiểm tra ngay.',
       },
       battery_low: {
-        title: '⚡ Pin sắp hết',
+        title: 'Pin sắp hết',
         color: '#f59e0b',
         bgColor: '#fef3c7',
         message: 'Pin thiết bị sắp hết. Vui lòng thay pin trong thời gian sớm nhất.',
       },
       malfunction: {
-        title: '❌ Sự cố thiết bị',
+        title: 'Sự cố thiết bị',
         color: '#dc2626',
         bgColor: '#fee2e2',
         message: 'Phát hiện sự cố trên thiết bị. Vui lòng liên hệ bộ phận kỹ thuật.',
@@ -656,7 +656,7 @@ const sendDeviceAlertEmail = async (user, device, alertType) => {
         <body>
           <div class="container">
             <div class="header">
-              <div class="logo">🔐 Smart Access Control</div>
+              <div class="logo">Smart Access Control Platform</div>
               <div class="title">${alert.title}</div>
             </div>
 

@@ -56,14 +56,32 @@ router.put(
 
 /**
  * GET /api/users
- * Get all users (Admin only)
+ * Get all users
+ * - Admin: gets all users
+ * - Owner: gets only members (excluding themselves)
  */
-router.get('/', authorize('admin'), userController.getAllUsers);
+router.get('/', authorize('admin', 'owner'), userController.getAllUsers);
 
 /**
  * PUT /api/users/:id/toggle-active
  * Toggle user active status (Admin only)
  */
 router.put('/:id/toggle-active', authorize('admin'), userController.toggleActive);
+
+/**
+ * PUT /api/users/:id/role
+ * Update user role (Admin only)
+ */
+router.put(
+  '/:id/role',
+  authorize('admin'),
+  validate({
+    role: {
+      required: true,
+      type: 'string',
+    },
+  }),
+  userController.updateRole
+);
 
 module.exports = router;
